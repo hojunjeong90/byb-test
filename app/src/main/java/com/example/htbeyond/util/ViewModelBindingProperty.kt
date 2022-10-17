@@ -9,6 +9,6 @@ import kotlin.reflect.KProperty
 
 class ViewModelBindingProperty<T : ViewModel>(private val modelClass: Class<T>) : ReadOnlyProperty<AppCompatActivity, T> {
     override fun getValue(thisRef: AppCompatActivity, property: KProperty<*>): T {
-        return ViewModelProvider(thisRef, Injection.provideViewModelFactory(owner = thisRef))[modelClass]
+        return ViewModelProvider(thisRef, Injection.provideViewModelFactory(application = thisRef.application, owner = thisRef))[modelClass]
     }
 }
