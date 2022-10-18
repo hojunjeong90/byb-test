@@ -1,14 +1,22 @@
 package com.example.htbeyond.view
 
-import android.Manifest
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
 import android.content.Intent
+import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.htbeyond.Constants
+import com.example.htbeyond.adapter.BtAdapter
 import com.example.htbeyond.business.MainActivityInterface
 import com.example.htbeyond.databinding.ActivityMainBinding
 import com.example.htbeyond.enum.UiType
@@ -25,10 +33,16 @@ class MainActivity : BaseActivity(), MainActivityInterface {
 
     override val viewModel by activityViewModelBinding(MainViewModel::class.java)
 
+    private val btAdapter = BtAdapter()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         with(binding) {
+            recyclerView.apply {
+                adapter = btAdapter
+                layoutManager = LinearLayoutManager(context)
+            }
+
             guideButton.setOnClickListener {
                 when (UiType.from(viewModel.getCurrentStatus())) {
                     UiType.REQUEST_BLUETOOTH_ENABLE -> {
@@ -38,7 +52,10 @@ class MainActivity : BaseActivity(), MainActivityInterface {
                         requestPermission()
                     }
                     UiType.ALL_PREPARED -> {
+                        btAdapter.clearData()
                         startScan()
+                    }
+                    UiType.SCANNING -> {
                         stopScan()
                     }
                 }
@@ -51,6 +68,13 @@ class MainActivity : BaseActivity(), MainActivityInterface {
                 }
             }
         }
+        lifecycleScope.launchWhenStarted {
+            viewModel.bluetoothRepository.foundData.collectLatest { btDevice ->
+                btDevice?.let {
+                    btAdapter.setData(btDevice)
+                }
+            }
+        }
     }
 
     private fun updateUi(uiState: MainViewModel.UiState) {
@@ -60,10 +84,21 @@ class MainActivity : BaseActivity(), MainActivityInterface {
                     true -> {
                         when (uiState.isBluetoothEnabled) {
                             true -> {
-                                with(binding) {
-                                    guideTextView.text = "블루투스 기기를 찾아보세요."
-                                    guideButton.text = "블루투스 탐색 시작"
+                                when(uiState.isBluetoothScanning){
+                                    true->{
+                                        with(binding) {
+                                            guideTextView.text = "블루투스 주변 기기 검색 중입니다."
+                                            guideButton.text = "블루투스 탐색 종료"
+                                        }
+                                    }
+                                    false->{
+                                        with(binding) {
+                                            guideTextView.text = "블루투스 기기를 찾아보세요."
+                                            guideButton.text = "블루투스 탐색 시작"
+                                        }
+                                    }
                                 }
+
                             }
                             false -> {
                                 with(binding) {
@@ -94,16 +129,26 @@ class MainActivity : BaseActivity(), MainActivityInterface {
         bluetoothEnableLauncher.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
     }
 
-    override fun requestPermission() {
-        requestPermissionLauncher.launch(Manifest.permission.BLUETOOTH_SCAN)
+    override fun requestPermission() : Boolean {
+        var isPermissionNotGrantedExist = false
+        run{
+            Constants.PERMISSIONS.forEach { permission ->
+                if((ActivityCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED)){
+                    requestPermissionLauncher.launch(permission)
+                    isPermissionNotGrantedExist = true
+                    return@run
+                }
+            }
+        }
+        return isPermissionNotGrantedExist
     }
 
     override fun startScan() {
-
+        viewModel.startBluetoothScanning()
     }
 
     override fun stopScan() {
-
+        viewModel.stopBluetoothScanning()
     }
 
     private val bluetoothEnableLauncher =
@@ -118,7 +163,9 @@ class MainActivity : BaseActivity(), MainActivityInterface {
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
-                viewModel.checkStatus()
+                if(!requestPermission()){
+                    viewModel.checkStatus()
+                }
             } else {
                 Toast.makeText(this@MainActivity, "권한 승인 중 취소하였습니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
             }
