@@ -88,10 +88,10 @@ class BtScanService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d(TAG, "Action Received = ${intent?.action}")
         when (intent?.action) {
-            Constants.IntentAction.START_FOREGROUND -> {
+            Constants.IntentAction.START_SCAN_FOREGROUND -> {
                 startForegroundService()
             }
-            Constants.IntentAction.STOP_FOREGROUND -> {
+            Constants.IntentAction.STOP_SCAN_FOREGROUND -> {
                 stopForegroundService()
             }
         }
@@ -160,8 +160,7 @@ class BtScanService : Service() {
             val deviceHardwareAddress = result.device.address
             val isConnectable = result.isConnectable
             val timestamp = result.timestampNanos
-            val txPower = result.txPower
-            val interval = result.periodicAdvertisingInterval
+            val device = result.device
             Log.d(TAG, "onScanResult : $deviceHardwareAddress")
             sendBtDevice(
                 btDevice = BtDevice(
@@ -169,8 +168,7 @@ class BtScanService : Service() {
                     deviceHardwareAddress,
                     isConnectable,
                     timestamp,
-                    txPower,
-                    interval
+                    device
                 )
             )
         }
@@ -201,7 +199,7 @@ class BtScanService : Service() {
      * TODO 여러 상태를 브로드캐스트
      */
     private fun sendBtDevice(btDevice: BtDevice) {
-        val intent = Intent(Constants.IntentAction.FOUND_BT_DEVICE)
+        val intent = Intent(Constants.IntentAction.SCAN_BT_DEVICE)
         intent.putExtra(Constants.IntentKey.BT_DEVICE, btDevice)
         sendBroadcast(intent)
     }

@@ -30,7 +30,7 @@ class MainActivity : BaseActivity(), MainActivityInterface, BtDeviceViewHolder.O
 
     override val viewModel by activityViewModelBinding(MainViewModel::class.java)
 
-    private val btAdapter = BtAdapter()
+    private val btAdapter = BtAdapter(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +39,6 @@ class MainActivity : BaseActivity(), MainActivityInterface, BtDeviceViewHolder.O
                 adapter = btAdapter
                 layoutManager = LinearLayoutManager(context)
             }
-
             guideButton.setOnClickListener {
                 when (MainUiType.from(viewModel.getCurrentStatus())) {
                     MainUiType.NEED_BLUETOOTH_ENABLE -> {
@@ -65,6 +64,14 @@ class MainActivity : BaseActivity(), MainActivityInterface, BtDeviceViewHolder.O
                 }
             }
         }
+        lifecycleScope.launchWhenCreated {
+            viewModel.getBtUiFlow().collectLatest { value ->
+                value?.let {
+                    Toast.makeText(this@MainActivity, if(value.isConnected) value.btDevice.deviceAddress+"에 연결하였습니다." else value.btDevice.deviceAddress+"과 연결이 해제되었습니다.", Toast.LENGTH_SHORT).show()
+                    btAdapter.updateData(value)
+                }
+            }
+        }
         lifecycleScope.launchWhenStarted {
             viewModel.getFoundDevice().collectLatest { btDevice ->
                 btDevice?.let {
@@ -72,7 +79,15 @@ class MainActivity : BaseActivity(), MainActivityInterface, BtDeviceViewHolder.O
                 }
             }
         }
+        lifecycleScope.launchWhenResumed {
+            viewModel.getStatusMessage().collectLatest { message ->
+                if (message.isNotEmpty()) {
+                    Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
         viewModel.registerScanReceiver()
+        viewModel.registerGattReceiver()
     }
 
     private fun updateUi(uiState: MainViewModel.UiState) {

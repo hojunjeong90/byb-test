@@ -8,7 +8,7 @@ import com.example.htbeyond.model.BtDevice
 import com.example.htbeyond.viewholder.BtDeviceViewHolder
 import com.hjj.booksearcher.viewholders.HeaderViewHolder
 
-class BtAdapter(private val onItemClick: BtDeviceViewHolder.OnItemClick? = null) :
+class BtAdapter(private val onItemClick: BtDeviceViewHolder.OnItemClick) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val dataSet = ArrayList<BtUiModel>()
@@ -52,14 +52,23 @@ class BtAdapter(private val onItemClick: BtDeviceViewHolder.OnItemClick? = null)
         dataSet.find {
             it is BtUiModel.Item && it.btDevice.deviceAddress == data.deviceAddress
         }?.let {
-            val index = dataSet.indexOf(it)
-            dataSet.remove(it)
-            notifyItemRemoved(index)
+//            val index = dataSet.indexOf(it)
+//            dataSet.remove(it)
+//            notifyItemRemoved(index)
         } ?: kotlin.run {
-            dataSet.add(BtUiModel.Item(data))
+            dataSet.add(BtUiModel.Item(data, false))
             notifyItemInserted(dataSet.size)
         }
+    }
 
+    fun updateData(data: BtUiModel.Item){
+        dataSet.find {
+            it is BtUiModel.Item && it.btDevice.deviceAddress == data.btDevice.deviceAddress
+        }?.let {
+            val index = dataSet.indexOf(it)
+            dataSet[index] = data
+            notifyItemChanged(index)
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")

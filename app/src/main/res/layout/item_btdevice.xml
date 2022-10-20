@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="100dp"
+    android:layout_height="wrap_content"
     android:padding="7dp">
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -33,6 +33,17 @@
         app:layout_constraintTop_toBottomOf="@+id/deviceNameTextView"
         tools:text="Device Address" />
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/deviceButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="Connect"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintTop_toBottomOf="@+id/deviceAddressTextView"/>
+
 
     <View
         android:id="@+id/underLine"
@@ -40,8 +51,8 @@
         android:layout_height="1dp"
         android:layout_marginTop="10dp"
         android:background="#DFDFDF"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/deviceButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
