@@ -24,6 +24,7 @@ import com.example.htbeyond.viewmodel.MainViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+// TODO 모든 언어는 리소스 파일로
 class MainActivity : BaseActivity(), MainActivityInterface, BtDeviceViewHolder.OnItemClick {
 
     override val binding by activityViewBinding(ActivityMainBinding::inflate)
@@ -90,6 +91,7 @@ class MainActivity : BaseActivity(), MainActivityInterface, BtDeviceViewHolder.O
         viewModel.registerGattReceiver()
     }
 
+    // TODO ENUM으로 정리
     private fun updateUi(uiState: MainViewModel.UiState) {
         when (uiState.isBluetoothAvailable) {
             true -> {
@@ -162,7 +164,6 @@ class MainActivity : BaseActivity(), MainActivityInterface, BtDeviceViewHolder.O
 
     override fun startScan() {
         viewModel.startBluetoothScanning()
-
     }
 
     override fun stopScan() {
