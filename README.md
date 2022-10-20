@@ -7,10 +7,12 @@ Author
 -------------------
 PeterJeong
 
-Features
+
+Architecture
 --------
-1. Continuously attempt to scan and connect to BLE in the background using the foreground service
-2. Optimize by setting location and ble scanning duration in the background
+1. Service(Component) <-> Repository <-> ViewModel <-> View(Activity)
+2. BtScanService에서 백그라운드 블루투스 탐색을, BtGattService에서 백그라운드에서 블루투스 연결을 수행합니다.
+
 
 Requirements
 -------------------
@@ -20,6 +22,7 @@ Requirements
 - CompileSdk 33
 - minSdk 28
 - targetSdk 30
+
 
 Getting Started
 --------
