@@ -1,39 +1,31 @@
 package com.example.htbeyond.viewmodel
 
-import android.Manifest
-import android.annotation.SuppressLint
+import android.app.ActivityManager
 import android.app.Application
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
-import android.bluetooth.le.ScanCallback
-import android.bluetooth.le.ScanResult
 import android.content.Context
 import android.content.pm.PackageManager
-import android.os.Handler
-import android.util.Log
 import androidx.core.app.ActivityCompat
-import androidx.core.content.getSystemService
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.htbeyond.Constants
 import com.example.htbeyond.model.BtDevice
-import com.example.htbeyond.repository.BluetoothRepository
+import com.example.htbeyond.repository.BtRepository
+import com.example.htbeyond.service.BtScanService
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val bluetoothAdapter: BluetoothAdapter? by lazy(LazyThreadSafetyMode.NONE) {
-        val bluetoothManager = application.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-        bluetoothManager.adapter
+        (application.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager).adapter
     }
+    private val activityManager = application.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
 
     private val uiEvent = MutableStateFlow(UiState())
-    val bluetoothRepository: BluetoothRepository = BluetoothRepository(bluetoothAdapter)
-    var isScanning = false
+    private val btRepository: BtRepository = BtRepository()
 
     val uiStateFlow: StateFlow<UiState> =
         uiEvent.mapLatest { return@mapLatest it }.stateIn(
@@ -46,17 +38,40 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         checkStatus()
     }
 
-    fun checkStatus(){
-        uiEvent.value = uiStateFlow.value.copy(isBluetoothEnabled = isBluetoothHardwareAvailable(), isBluetoothGranted = isBluetoothPermissionGranted(), isBluetoothAvailable = isBluetoothEnabled(), isBluetoothScanning = isScanning)
+    fun getFoundDevice() : MutableStateFlow<BtDevice?> {
+        return btRepository.foundData
+    }
+
+    fun checkStatus() {
+        uiEvent.value = uiStateFlow.value.copy(
+            isBluetoothEnabled = isBluetoothHardwareAvailable(),
+            isBluetoothGranted = isBluetoothPermissionGranted(),
+            isBluetoothAvailable = isBluetoothEnabled(),
+            isBluetoothScanning = isBleScanningRunning()
+        )
+    }
+
+    private fun isBleScanningRunning(): Boolean {
+        activityManager.getRunningServices(Int.MAX_VALUE).find { it.service.className.equals(BtScanService::class.java.name) }?.let {
+            return true
+        }?:run {
+            return false
+        }
     }
 
     private fun isBluetoothHardwareAvailable(): Boolean {
-        return getApplication<Application>().packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH) && getApplication<Application>().packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)
+        return getApplication<Application>().packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH) && getApplication<Application>().packageManager.hasSystemFeature(
+            PackageManager.FEATURE_BLUETOOTH_LE
+        )
     }
 
     private fun isBluetoothPermissionGranted(): Boolean {
         Constants.PERMISSIONS.forEach { permission ->
-            if((ActivityCompat.checkSelfPermission(getApplication(), permission) != PackageManager.PERMISSION_GRANTED)){
+            if ((ActivityCompat.checkSelfPermission(
+                    getApplication(),
+                    permission
+                ) != PackageManager.PERMISSION_GRANTED)
+            ) {
                 return false
             }
         }
@@ -67,20 +82,47 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return bluetoothAdapter?.isEnabled == true
     }
 
-    fun getCurrentStatus() : UiState {
+    fun getCurrentStatus(): UiState {
         return uiStateFlow.value
     }
 
     fun startBluetoothScanning() {
-        bluetoothRepository.startScan()
-        isScanning = true
+        btRepository.startScanService()
         checkStatus()
     }
 
     fun stopBluetoothScanning() {
-        bluetoothRepository.stopScan()
-        isScanning = false
+        btRepository.stopScanService()
         checkStatus()
+    }
+
+    fun registerScanReceiver(){
+        btRepository.registerScanReceiver()
+    }
+
+    fun unregisterScanReceiver(){
+        btRepository.unregisterScanReceiver()
+    }
+
+    fun registerGattReceiver(){
+
+    }
+
+    fun unregisterGattReceiver(){
+
+    }
+
+    fun connectToDevice(btDevice: BtDevice){
+
+    }
+
+    fun disconnectToDevice(btDevice: BtDevice){
+
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        unregisterScanReceiver()
     }
 
     data class UiState(
@@ -89,5 +131,4 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         var isBluetoothEnabled: Boolean = false,
         var isBluetoothScanning: Boolean = false
     )
-
 }

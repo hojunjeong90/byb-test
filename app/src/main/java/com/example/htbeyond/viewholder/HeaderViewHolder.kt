@@ -5,11 +5,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.htbeyond.R
 import com.example.htbeyond.databinding.ItemHeaderBinding
-import com.example.htbeyond.model.BluetoothUiModel
+import com.example.htbeyond.model.BtUiModel
 
 class HeaderViewHolder(private val binding: ItemHeaderBinding) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(headerItem: BluetoothUiModel.Header) {
+    fun bind(headerItem: BtUiModel.Header) {
         binding.headerTextView.text = headerItem.title
     }
 

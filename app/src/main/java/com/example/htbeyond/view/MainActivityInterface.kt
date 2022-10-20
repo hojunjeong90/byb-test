@@ -1,4 +1,4 @@
-package com.example.htbeyond.business
+package com.example.htbeyond.view
 
 interface MainActivityInterface {
     fun requestBluetoothEnable()

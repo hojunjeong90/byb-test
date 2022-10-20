@@ -2,15 +2,15 @@ package com.example.htbeyond.enum
 
 import com.example.htbeyond.viewmodel.MainViewModel
 
-enum class UiType {
+enum class MainUiType {
 
-    REQUEST_BLUETOOTH_ENABLE,
-    REQUEST_BLUETOOTH_PERMISSION,
-    ALL_PREPARED,
+    NEED_BLUETOOTH_ENABLE,
+    NEED_PERMISSION,
+    PREPARED,
     SCANNING;
 
     companion object {
-        fun from(uiState: MainViewModel.UiState): UiType {
+        fun from(uiState: MainViewModel.UiState): MainUiType {
             return when (uiState.isBluetoothGranted) {
                 true -> {
                     when (uiState.isBluetoothEnabled) {
@@ -20,17 +20,17 @@ enum class UiType {
                                     SCANNING
                                 }
                                 false->{
-                                    ALL_PREPARED
+                                    PREPARED
                                 }
                             }
                         }
                         false -> {
-                            REQUEST_BLUETOOTH_ENABLE
+                            NEED_BLUETOOTH_ENABLE
                         }
                     }
                 }
                 false -> {
-                    REQUEST_BLUETOOTH_PERMISSION
+                    NEED_PERMISSION
                 }
             }
         }

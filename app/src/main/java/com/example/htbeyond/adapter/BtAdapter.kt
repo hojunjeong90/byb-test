@@ -1,34 +1,36 @@
 package com.example.htbeyond.adapter
 
+import android.annotation.SuppressLint
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.htbeyond.model.BluetoothUiModel
+import com.example.htbeyond.model.BtUiModel
 import com.example.htbeyond.model.BtDevice
 import com.example.htbeyond.viewholder.BtDeviceViewHolder
 import com.hjj.booksearcher.viewholders.HeaderViewHolder
 
-class BtAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class BtAdapter(private val onItemClick: BtDeviceViewHolder.OnItemClick? = null) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val dataSet = ArrayList<BluetoothUiModel>()
+    private val dataSet = ArrayList<BtUiModel>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return when(viewType){
-            1000 ->{
+        return when (viewType) {
+            1000 -> {
                 HeaderViewHolder.create(parent)
             }
-            else ->{
-                BtDeviceViewHolder.create(parent)
+            else -> {
+                BtDeviceViewHolder.create(parent, onItemClick)
             }
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when(dataSet[position]){
-            is BluetoothUiModel.Header -> {
-                (holder as HeaderViewHolder).bind(dataSet[position] as BluetoothUiModel.Header)
+        when (dataSet[position]) {
+            is BtUiModel.Header -> {
+                (holder as HeaderViewHolder).bind(dataSet[position] as BtUiModel.Header)
             }
-            is BluetoothUiModel.Item -> {
-                (holder as BtDeviceViewHolder).bind(dataSet[position] as BluetoothUiModel.Item)
+            is BtUiModel.Item -> {
+                (holder as BtDeviceViewHolder).bind(dataSet[position] as BtUiModel.Item)
             }
         }
     }
@@ -36,31 +38,32 @@ class BtAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     override fun getItemCount(): Int = dataSet.size
 
     override fun getItemViewType(position: Int): Int {
-        return when(dataSet[position]){
-            is BluetoothUiModel.Header -> {
+        return when (dataSet[position]) {
+            is BtUiModel.Header -> {
                 1000
             }
-            is BluetoothUiModel.Item -> {
+            is BtUiModel.Item -> {
                 1001
             }
         }
     }
 
-    fun setData(data: BtDevice){
+    fun setData(data: BtDevice) {
         dataSet.find {
-            it is BluetoothUiModel.Item && it.btDevice.deviceAddress == data.deviceAddress
+            it is BtUiModel.Item && it.btDevice.deviceAddress == data.deviceAddress
         }?.let {
-//            val index = dataSet.indexOf(it)
-//            dataSet.remove(it)
-//            notifyItemRemoved(index)
+            val index = dataSet.indexOf(it)
+            dataSet.remove(it)
+            notifyItemRemoved(index)
         } ?: kotlin.run {
-            dataSet.add(BluetoothUiModel.Item(data))
+            dataSet.add(BtUiModel.Item(data))
             notifyItemInserted(dataSet.size)
         }
 
     }
 
-    fun clearData(){
+    @SuppressLint("NotifyDataSetChanged")
+    fun clearData() {
         dataSet.clear()
         notifyDataSetChanged()
     }
