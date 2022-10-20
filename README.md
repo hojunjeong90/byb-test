@@ -1,5 +1,8 @@
 <h1>BLE Background Scanning and Connect Research</h1>
 
+![KakaoTalk_Photo_2022-10-20-22-44-45](https://user-images.githubusercontent.com/42525347/196965680-12cdba04-9a77-404e-b99e-242d72bab41c.jpeg)
+
+
 Author
 -------------------
 PeterJeong
