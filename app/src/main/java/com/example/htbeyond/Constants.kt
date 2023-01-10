@@ -5,6 +5,8 @@ import android.os.Build
 
 object Constants {
 
+    val accessKeyId = "AKIAZIICKONHHK4YB3XH"
+    val secretKey = "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"
     val PERMISSIONS = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.S) {
         arrayOf(
             ACCESS_FINE_LOCATION,

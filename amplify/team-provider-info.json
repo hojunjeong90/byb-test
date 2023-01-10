@@ -1,0 +1,33 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-bybtest-dev-171329-authRole",
+      "UnauthRoleArn": "arn:aws:iam::636196909902:role/amplify-bybtest-dev-171329-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::636196909902:role/amplify-bybtest-dev-171329-authRole",
+      "Region": "ap-northeast-2",
+      "DeploymentBucketName": "amplify-bybtest-dev-171329-deployment",
+      "UnauthRoleName": "amplify-bybtest-dev-171329-unauthRole",
+      "StackName": "amplify-bybtest-dev-171329",
+      "StackId": "arn:aws:cloudformation:ap-northeast-2:636196909902:stack/amplify-bybtest-dev-171329/017d9200-8d9a-11ed-8819-06b9809cf674",
+      "AmplifyAppId": "d934qz8ddoxkg"
+    }
+  },
+  "android": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-bybtest-android-150930-authRole",
+      "UnauthRoleArn": "arn:aws:iam::636196909902:role/amplify-bybtest-android-150930-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::636196909902:role/amplify-bybtest-android-150930-authRole",
+      "Region": "ap-northeast-2",
+      "DeploymentBucketName": "amplify-bybtest-android-150930-deployment",
+      "UnauthRoleName": "amplify-bybtest-android-150930-unauthRole",
+      "StackName": "amplify-bybtest-android-150930",
+      "StackId": "arn:aws:cloudformation:ap-northeast-2:636196909902:stack/amplify-bybtest-android-150930/594c7bc0-90ad-11ed-9bb9-0a0eac5885d0",
+      "AmplifyAppId": "d934qz8ddoxkg"
+    },
+    "categories": {
+      "auth": {
+        "bybtestb91b12c2": {}
+      }
+    }
+  }
+}

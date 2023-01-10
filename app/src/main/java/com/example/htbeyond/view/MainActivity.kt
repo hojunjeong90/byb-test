@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -57,6 +58,20 @@ class MainActivity : BaseActivity(), MainActivityInterface, BtDeviceViewHolder.O
                     }
                 }
             }
+            activityButton.setOnClickListener {
+                ContextCompat.startActivity(
+                    this@MainActivity,
+                    Intent(this@MainActivity, LoginActivity::class.java),
+                    null
+                )
+            }
+            webViewButton.setOnClickListener {
+                ContextCompat.startActivity(
+                    this@MainActivity,
+                    Intent(this@MainActivity, MyWebViewActivity::class.java),
+                    null
+                )
+            }
         }
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -68,7 +83,11 @@ class MainActivity : BaseActivity(), MainActivityInterface, BtDeviceViewHolder.O
         lifecycleScope.launchWhenCreated {
             viewModel.getBtUiFlow().collectLatest { value ->
                 value?.let {
-                    Toast.makeText(this@MainActivity, if(value.isConnected) value.btDevice.deviceAddress+"에 연결하였습니다." else value.btDevice.deviceAddress+"과 연결이 해제되었습니다.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@MainActivity,
+                        if (value.isConnected) value.btDevice.deviceAddress + "에 연결하였습니다." else value.btDevice.deviceAddress + "과 연결이 해제되었습니다.",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     btAdapter.updateData(value)
                 }
             }
