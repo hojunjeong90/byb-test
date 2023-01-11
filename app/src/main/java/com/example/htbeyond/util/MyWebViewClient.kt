@@ -1,6 +1,7 @@
 package com.example.htbeyond.util
 
 import android.graphics.Bitmap
+import android.net.Uri
 import android.net.http.SslError
 import android.os.Message
 import android.view.KeyEvent
@@ -8,12 +9,17 @@ import android.webkit.*
 
 class MyWebViewClient : WebViewClient() {
 
-    override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-        return super.shouldOverrideUrlLoading(view, url)
-    }
-
-    override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-        return super.shouldOverrideUrlLoading(view, request)
+    /**
+     * URL Load 하기 전에 시작
+     */
+    override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest): Boolean {
+        if (request.url?.host == "www.example.com") {
+            return false
+        }
+        /**
+         * 예를 들면 이곳에 Opened 및 Closed Stack에 따른 Intent 처리를 할 수 있습니다.
+         */
+        return true
     }
 
     override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
@@ -32,28 +38,11 @@ class MyWebViewClient : WebViewClient() {
         super.onPageCommitVisible(view, url)
     }
 
-    override fun shouldInterceptRequest(view: WebView?, url: String?): WebResourceResponse? {
-        return super.shouldInterceptRequest(view, url)
-    }
-
     override fun shouldInterceptRequest(
         view: WebView?,
         request: WebResourceRequest?
     ): WebResourceResponse? {
         return super.shouldInterceptRequest(view, request)
-    }
-
-    override fun onTooManyRedirects(view: WebView?, cancelMsg: Message?, continueMsg: Message?) {
-        super.onTooManyRedirects(view, cancelMsg, continueMsg)
-    }
-
-    override fun onReceivedError(
-        view: WebView?,
-        errorCode: Int,
-        description: String?,
-        failingUrl: String?
-    ) {
-        super.onReceivedError(view, errorCode, description, failingUrl)
     }
 
     override fun onReceivedError(

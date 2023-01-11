@@ -1,17 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Test</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <title>TEST HTML</title>
 </head>
 
 <body>
-hola
-adios
-</body>
+<p>
+    This is sample webview
+</p>
+
+<input type="button" value="Show Toast" onClick="showAndroidToast('Hello Byb!')" />
+<input type="button" value="Show Popup Dialog" onClick="showAndroidPopup('Hello Byb!')" />
+<input type="button" value="Show Activity" onClick="showLoginActivity()" />
 
 <script type="text/javascript">
-    function init(val){
-
+    function showAndroidToast(toast) {
+        android.showToast(toast);
+    }
+    function showAndroidPopup(message) {
+        android.showPopup(message);
+    }
+    function showLoginActivity() {
+        android.showLoginActivity();
     }
 </script>
+</body>
 </html>
